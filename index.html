@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala 12x60</title>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js'></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        #container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 850px;
+            margin: auto;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="date"] {
+            padding: 8px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #calendar {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .mobile-event {
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            border-radius: 50%;
+            background-color: red;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .fc-header-toolbar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .fc-toolbar-chunk:first-child {
+            order: 2;
+        }
+        .fc-toolbar-chunk:nth-child(2) {
+            order: 1;
+        }
+        .fc-toolbar-chunk:last-child {
+            order: 3;
+        }
+        @media (min-width: 601px) {
+            .fc-header-toolbar {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h2>Escala de Trabalho 12x60</h2>
+        <label for="referenceDate">Data de Referência:</label>
+        <input type="date" id="referenceDate">
+        <button onclick="generateSchedule()">Gerar Escala</button>
+        
+        <div id='calendar'></div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            window.calendarEl = document.getElementById('calendar');
+            window.calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'pt-br',
+                eventContent: function(arg) {
+                    if (window.innerWidth <= 600) {
+                        let customEl = document.createElement('div');
+                        customEl.classList.add('mobile-event');
+                        customEl.innerText = 'T';
+                        return { domNodes: [customEl] };
+                    }
+                    return { html: arg.event.title };
+                },
+                events: []
+            });
+            calendar.render();
+        });
+
+        function generateSchedule() {
+            const referenceDate = document.getElementById('referenceDate').value;
+            if (!referenceDate) {
+                alert('Por favor, insira uma data de referência.');
+                return;
+            }
+            
+            const startDate = new Date(referenceDate);
+            const events = [];
+            
+            for (let i = 0; i < 60; i += 3) {
+                let workDay = new Date(startDate);
+                workDay.setDate(startDate.getDate() + i);
+                events.push({
+                    title: 'Trabalho',
+                    start: workDay.toISOString().split('T')[0],
+                    color: 'red'
+                });
+            }
+            
+            calendar.removeAllEvents();
+            events.forEach(event => calendar.addEvent(event));
+        }
+    </script>
+</body>
+</html>
